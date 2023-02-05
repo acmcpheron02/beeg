@@ -32,8 +32,6 @@ end
 function _update()
   player.move()
   cam.cameraDraw()
-  collided = false
-  eated = false
   collisions()
   foreach(particles, update_particles)
 end
@@ -53,6 +51,7 @@ function _draw()
     print(player.x)
     print(player.x+player.w)
     print(cam.posX)
+    print(player.radius)
     print("bounds = 24")
     print("offset = 64")
     print("threshold = 88")
@@ -67,10 +66,9 @@ end
 
 function collide(a1, a2)
   if (a1==a2) then return end
-  xdist = mid((a1.center_x() - a2.x), (a1.center_x() - a2.x-a2.w), 0)
-  ydist = mid((a1.center_y() - a2.y), (a1.center_y() - a2.y-a2.h), 0)
-  if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist) then
-    collided = true
+  xdist = a1.xCen() - a2.xCen()
+  ydist = a1.yCen() - a2.yCen()
+  if (a1.radius*a1.radius)>((xdist * xdist + ydist * ydist)-a2.w/2*a2.h/2) then
     collide_event(a1, a2)
   end
 end
@@ -92,6 +90,12 @@ function make_actor(k,x,y,h,w,s)
   a.w=w or 7
   a.xFlipped = 0
   a.sprite = s
+  function a.xCen() 
+    return a.x + a.w/2
+  end 
+  function a.yCen() 
+    return a.y + a.h/2
+  end 
   function a.draw_actor()
     spr(a.sprite, a.x, a.y, 1, 1, a.xFlipped)
     if debug == true then
@@ -109,15 +113,6 @@ end
 function make_player(x,y,h,w)
   local p = {}
   p = make_actor("player", x, y, h, w)
-  function p.center_x() 
-    return p.x + p.w/2
-  end 
-  function p.center_y() 
-    return p.y + p.h/2
-  end 
-  function p.center_y() 
-    return p.y + p.h/2
-  end 
   function p.set_size()
     local increment = 4
     p.size = 2 + flr((p.mass - p.base_mass)/4)
@@ -134,6 +129,7 @@ function make_player(x,y,h,w)
   end
   function p.set_radius()
     local radius = (p.w/2)+p.size
+    p.radius = radius
     return radius
   end
   p.dx = 0
@@ -163,6 +159,7 @@ function make_player(x,y,h,w)
     p.set_accel()
     p.set_friction()
     p.set_size()
+    p.set_radius()
   end
   
   function p.move()
@@ -254,37 +251,37 @@ end
 function eat_fx (pl, t)
   local sp = 4.5 --speed
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, sp, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, sp, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
 
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, -sp, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, -sp, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
   
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, sp, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, sp, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
   
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, -sp, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, -sp, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
 
   local sp = 6
 
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, 0, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, 0, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
 
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, 0, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, 0, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
   
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, sp, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, sp, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
   
   local fx = {}
-  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, -sp, 20, 7, pl.center_x(), pl.center_y()
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, -sp, 20, 7, pl.xCen(), pl.yCen()
   add(particles, fx)
 
 end
