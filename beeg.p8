@@ -16,10 +16,9 @@ particles = {}
 
 function _init()
   player = make_player(60, 60, 6, 6)
-  player.set_accel()
-  player.set_friction()
+  -- player.set_accel()
+  -- player.set_friction()
   cam = make_camera()
-  --make_actor("plankton", 10, 10, 7, 7, 32)
   make_actor("plankton", 90, 90, 7, 7, 32)
   make_actor("plankton", 20, 90, 7, 7, 32)
   make_actor("plankton", 90, 20, 7, 7, 32)
@@ -49,17 +48,8 @@ function _draw()
     end
   end
   player.draw_actor()
-
   --debug prints
   if debug == true then
-    -- print("accel: "..player.accel)
-    -- print("fristion: "..player.friction)
-    -- print("xdist: "..xdist)
-    -- print("ydist: "..ydist)
-    -- print("a2+b2 "..(xdist * xdist + ydist * ydist))
-    -- print(collided)
-    -- print(eated)
-    -- print(player.mass)
     print(player.x)
     print(player.x+player.w)
     print(cam.posX)
@@ -69,18 +59,19 @@ function _draw()
   end
 end
 
+function collisions()
+  for a1 in all(actor) do
+   collide(player,a1)
+  end
+end
+
 function collide(a1, a2)
   if (a1==a2) then return end
   xdist = mid((a1.center_x() - a2.x), (a1.center_x() - a2.x-a2.w), 0)
   ydist = mid((a1.center_y() - a2.y), (a1.center_y() - a2.y-a2.h), 0)
-  if (a1.radius()*a1.radius())>(xdist * xdist + ydist * ydist) then
+  if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist) then
     collided = true
     collide_event(a1, a2)
-  end
-end
-function collisions()
-  for a1 in all(actor) do
-   collide(player,a1)
   end
 end
 
@@ -101,7 +92,6 @@ function make_actor(k,x,y,h,w,s)
   a.w=w or 7
   a.xFlipped = 0
   a.sprite = s
-  
   function a.draw_actor()
     spr(a.sprite, a.x, a.y, 1, 1, a.xFlipped)
     if debug == true then
@@ -111,11 +101,136 @@ function make_actor(k,x,y,h,w,s)
       pset(a.x+a.w, a.y+a.h, 7)
     end
   end
-  
   add(actor, a)
-
   return a
+end
 
+
+function make_player(x,y,h,w)
+  local p = {}
+  p = make_actor("player", x, y, h, w)
+  function p.center_x() 
+    return p.x + p.w/2
+  end 
+  function p.center_y() 
+    return p.y + p.h/2
+  end 
+  function p.center_y() 
+    return p.y + p.h/2
+  end 
+  function p.set_size()
+    local increment = 4
+    p.size = 2 + flr((p.mass - p.base_mass)/4)
+  end
+  function p.set_accel()
+    local accel = mid(5, p.base_accel - (p.mass - p.base_mass)/10, 0.5)
+    p.accel = accel
+    return accel
+  end
+  function p.set_friction()
+    local friction = mid(0.95, (p.base_friction + (p.mass - p.base_mass)/50), 0.1)
+    p.friction = friction
+    return friction
+  end
+  function p.set_radius()
+    local radius = (p.w/2)+p.size
+    return radius
+  end
+  p.dx = 0
+  p.dy = 0
+  p.x_speed = 0
+  p.y_speed = 0
+  p.mass = 20
+  p.base_accel = 1.2
+  p.base_friction = .45
+  p.base_mass = 20
+  p.max_speed = 4
+  p.stop_under = 0.05
+  p.size = p.set_size() or 2
+  p.accel = p.set_accel()
+  p.friction = p.set_friction()
+  p.radius = p.set_radius()
+  p.anim = {
+    state = {0},
+    idle = 0,
+    side = 1,
+    up = 2,
+    down = 3,
+    xFlipped = false
+  }
+  function p.add_mass(m)
+    p.mass += m
+    p.set_accel()
+    p.set_friction()
+    p.set_size()
+  end
+  
+  function p.move()
+    p.dx, p.dy = direction_control()
+    if(abs(p.x_speed) < p.stop_under and p.dx == 0) then p.x_speed = 0 end
+    if(abs(p.y_speed) < p.stop_under and p.dy == 0) then p.y_speed = 0 end
+    p.x_speed = p.x_speed + (p.dx * p.accel)
+    p.y_speed = p.y_speed + (p.dy * p.accel)
+    p.x_speed = mid(p.max_speed, p.x_speed, p.max_speed*-1)
+    p.y_speed = mid(p.max_speed, p.y_speed, p.max_speed*-1)
+    if p.dx == 0 then p.x_speed = p.x_speed * p.friction end
+    if p.dy == 0 then p.y_speed = p.y_speed * p.friction end
+    if abs(p.x_speed) < p.stop_under then p.x_speed = 0 end
+    if abs(p.y_speed) < p.stop_under then p.y_speed = 0 end
+    p.x += p.x_speed
+    p.y += p.y_speed
+  end
+  
+  function p.draw_actor()
+    ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 8)
+    spr(p.sprite, p.x, p.y, 1, 1, p.xFlipped)
+    if debug == true then
+      pset(p.x, p.y, 7)
+      pset(p.x, p.y+p.h, 7)
+      pset(p.x+p.w, p.y, 7)
+      pset(p.x+p.w, p.y+p.h, 7)
+    end
+  end
+
+  return p
+end
+
+function direction_control ()
+  local dx = 0
+  local dy = 0
+
+  if(btn(0)) then dx = -1 end
+  if(btn(1)) then dx = 1 end
+  if(btn(2)) then dy = -1 end
+  if(btn(3)) then dy = 1 end
+  if(btn(0)) and (btn(1)) then dx = 0 end
+  if(btn(2)) and (btn(3)) then dy = 0 end
+  if(dx != 0) and (dy != 0) then
+    local dist = sqrt(dx*dx+dy*dy)
+    dx /= dist
+    dy /= dist
+  end
+  return dx, dy
+end
+
+function make_camera()
+  local c = {}
+  c.posX = 0
+  c.posY = 0
+  function c.cameraDraw()
+    local bounds = 24
+    local offset = 64
+    --right bounds
+    if (player.x+player.w-offset > c.posX + bounds) then c.posX = player.x + player.w - offset - bounds end
+    --left bounds
+    if (player.x-offset < c.posX - bounds) then c.posX = player.x - offset + bounds end
+    --lower bounds
+    if (player.y+player.h-offset > bounds + c.posY) then c.posY = player.y + player.h - offset - bounds end
+    --upper bounds
+    if (player.y-offset < c.posY - bounds) then c.posY = player.y - offset + bounds end
+    camera(c.posX, c.posY)
+  end
+  return c
 end
 
 function attach(pl, t)
@@ -191,144 +306,8 @@ function draw_particles(fx)
   end
 end
 
-function direction_control ()
-  local dx = 0
-  local dy = 0
-
-  if(btn(0)) then dx = -1 end
-  if(btn(1)) then dx = 1 end
-  if(btn(2)) then dy = -1 end
-  if(btn(3)) then dy = 1 end
-  if(btn(0)) and (btn(1)) then dx = 0 end
-  if(btn(2)) and (btn(3)) then dy = 0 end
-  if(dx != 0) and (dy != 0) then
-    local dist = sqrt(dx*dx+dy*dy)
-    dx /= dist
-    dy /= dist
-  end
-  return dx, dy
-end
-
-function make_camera()
-  local c = {}
-  c.posX = 0
-  c.posY = 0
-  function c.cameraDraw()
-    local bounds = 24
-    local offset = 64
-    --right bounds
-    if (player.x+player.w-offset > c.posX + bounds) then c.posX = player.x + player.w - offset - bounds end
-    --left bounds
-    if (player.x-offset < c.posX - bounds) then c.posX = player.x - offset + bounds end
-    --lower bounds
-    if (player.y+player.h-offset > bounds + c.posY) then c.posY = player.y + player.h - offset - bounds end
-    --upper bounds
-    if (player.y-offset < c.posY - bounds) then c.posY = player.y - offset + bounds end
-    camera(c.posX, c.posY)
-  end
-  return c
-end
 
 
-function make_player(x,y,h,w)
-  local p = {}
-  p = make_actor("player", x, y, h, w)
-  function p.center_x() 
-    return p.x + p.w/2
-  end 
-  function p.center_y() 
-    return p.y + p.h/2
-  end 
-  function p.center_y() 
-    return p.y + p.h/2
-  end 
-  function p.radius() 
-    return (p.w/2)+p.size
-  end
-  p.size = 2
-  p.dx = 0
-  p.dy = 0
-  p.x_speed = 0
-  p.y_speed = 0
-  p.mass = 20
-  p.base_accel = 1.2
-  p.base_friction = .45
-  p.base_mass = 20
-  p.accel = 0
-  p.friction = 0
-  p.max_speed = 4
-  p.stop_under = 0.05
-  p.anim = {
-    state = {0},
-    idle = 0,
-    side = 1,
-    up = 2,
-    down = 3,
-    xFlipped = false
-  }
-  function p.set_accel()
-    local accel = mid(5, p.base_accel - (p.mass - p.base_mass)/10, 0.5)
-    p.accel = accel
-    return accel
-  end
-
-  function p.set_friction()
-    local friction = mid(0.95, (p.base_friction + (p.mass - p.base_mass)/50), 0.1)
-    p.friction = friction
-    return friction
-  end
-
-  function p.set_size()
-    local increment = 4
-    p.size = 2 + flr((p.mass - p.base_mass)/4)
-  end
-
-  function p.add_mass(m)
-    p.mass += m
-    p.set_accel()
-    p.set_friction()
-    p.set_size()
-  end
-
-  function p.draw_actor()
-    ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 8)
-    spr(p.sprite, p.x, p.y, 1, 1, p.xFlipped)
-    if debug == true then
-      pset(p.x, p.y, 7)
-      pset(p.x, p.y+p.h, 7)
-      pset(p.x+p.w, p.y, 7)
-      pset(p.x+p.w, p.y+p.h, 7)
-    end
-  end
-
---p.x-scrOff-bounds (right boundary)
---p.x-scrOff+bounds+p.w (left boundary)
-
-
-  function p.move()
-    p.dx, p.dy = direction_control()
-    
-    if(abs(p.x_speed) < p.stop_under and p.dx == 0) then p.x_speed = 0 end
-    if(abs(p.y_speed) < p.stop_under and p.dy == 0) then p.y_speed = 0 end
-
-    p.x_speed = p.x_speed + (p.dx * p.accel)
-    p.y_speed = p.y_speed + (p.dy * p.accel)
-
-    p.x_speed = mid(p.max_speed, p.x_speed, p.max_speed*-1)
-    p.y_speed = mid(p.max_speed, p.y_speed, p.max_speed*-1)
-
-    if p.dx == 0 then p.x_speed = p.x_speed * p.friction end
-    if p.dy == 0 then p.y_speed = p.y_speed * p.friction end
-
-    if abs(p.x_speed) < p.stop_under then p.x_speed = 0 end
-    if abs(p.y_speed) < p.stop_under then p.y_speed = 0 end
-
-    p.x += p.x_speed
-    p.y += p.y_speed
-  end
-
-  return p
-end
 
 
 
