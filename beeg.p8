@@ -119,8 +119,8 @@ function make_actor(k,x,y,h,w,s)
 end
 
 function attach(pl, t)
-  local pr = 1 --player ratio
-  local tr = 1.5 --target ratio
+  local pr = 1.1 --player ratio
+  local tr = 1 --target ratio
   local er = sqrt(pl.size)*0.4 --eat range
   t.x=(pl.x*pr + t.x*tr)/(pr+tr)
   t.y=(pl.y*pr + t.y*tr)/(pr+tr)
@@ -213,7 +213,6 @@ function make_camera()
   local c = {}
   c.posX = 0
   c.posY = 0
-  c.player = player
   function c.cameraDraw()
     local bounds = 24
     local offset = 64
@@ -309,8 +308,8 @@ function make_player(x,y,h,w)
   function p.move()
     p.dx, p.dy = direction_control()
     
-    if(abs(p.x_speed) < p.stop_under and dx == 0) then p.x_speed = 0 end
-    if(abs(p.y_speed) < p.stop_under and dy == 0) then p.y_speed = 0 end
+    if(abs(p.x_speed) < p.stop_under and p.dx == 0) then p.x_speed = 0 end
+    if(abs(p.y_speed) < p.stop_under and p.dy == 0) then p.y_speed = 0 end
 
     p.x_speed = p.x_speed + (p.dx * p.accel)
     p.y_speed = p.y_speed + (p.dy * p.accel)
