@@ -48,13 +48,14 @@ function _draw()
   player.draw_actor()
   --debug prints
   if debug == true then
-    print(player.x)
-    print(player.x+player.w)
-    print(cam.posX)
-    print(player.radius)
-    print("bounds = 24")
-    print("offset = 64")
-    print("threshold = 88")
+    -- print(player.x)
+    -- print(player.x+player.w)
+    -- print(cam.posX)
+    -- print(player.radius)
+    -- print("bounds = 24")
+    -- print("offset = 64")
+    -- print("threshold = 88")
+    collisions()
   end
 end
 
@@ -66,9 +67,18 @@ end
 
 function collide(a1, a2)
   if (a1==a2) then return end
-  xdist = a1.xCen() - a2.xCen()
-  ydist = a1.yCen() - a2.yCen()
-  if (a1.radius*a1.radius)>((xdist * xdist + ydist * ydist)-a2.w/2*a2.h/2) then
+  xdist = (a1.xCen() - a2.xCen())
+  ydist = (a1.yCen() - a2.yCen())
+  if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist) then
+    printh("radius")
+    printh(a1.radius)
+    printh("radius^2")
+    printh(a1.radius*a1.radius)
+    printh("xdist")
+    printh(xdist)
+    printh("ydist")
+    printh(ydist)
+    printh(xdist * xdist + ydist * ydist)
     collide_event(a1, a2)
   end
 end
@@ -142,10 +152,10 @@ function make_player(x,y,h,w)
   p.base_mass = 20
   p.max_speed = 4
   p.stop_under = 0.05
-  p.size = p.set_size() or 2
-  p.accel = p.set_accel()
-  p.friction = p.set_friction()
-  p.radius = p.set_radius()
+  p.size = 2
+  p.accel = 0
+  p.friction = 0
+  p.radius = 5
   p.anim = {
     state = {0},
     idle = 0,
@@ -188,6 +198,11 @@ function make_player(x,y,h,w)
       pset(p.x+p.w, p.y+p.h, 7)
     end
   end
+
+  p.set_accel()
+  p.set_friction()
+  p.set_radius()
+  p.set_size()
 
   return p
 end
