@@ -73,7 +73,7 @@ function collide(a1, a2)
     del(actor, a2)
   end
   if xdist < a1.radius + 4 and ydist < a1.radius + 4 then
-    if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist) then
+    if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist)-(a2.w*a2.h) then
       collide_event(a1, a2)
     end
   end
@@ -96,6 +96,7 @@ function make_actor(k,x,y,h,w,s)
   a.w=w or 7
   a.xFlipped = 0
   a.sprite = s
+  a.attSp = 0
   function a.xCen() 
     return a.x + a.w/2
   end 
@@ -195,10 +196,7 @@ function make_player(x,y,h,w)
     end
   end
 
-  p.set_accel()
-  p.set_friction()
-  p.set_radius()
-  p.set_size()
+  p.add_mass(0)
 
   return p
 end
@@ -242,13 +240,13 @@ function make_camera()
 end
 
 function attach(pl, t)
-  local pr = 1.1 --player ratio
-  local tr = 1 --target ratio
+  local tr = 75 --target ratio
   local er = sqrt(pl.size)*0.4 --eat range
-  t.x=(pl.x*pr + t.x*tr)/(pr+tr)
-  t.y=(pl.y*pr + t.y*tr)/(pr+tr)
+  t.x=(pl.x*t.attSp + t.x*tr)/(t.attSp+tr)
+  t.y=(pl.y*t.attSp + t.y*tr)/(t.attSp+tr)
   if abs(t.x-pl.x) < er and abs(t.y-pl.y) < er then
     eat(pl, t)
+  else t.attSp += 1
   end
 end
 
