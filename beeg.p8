@@ -3,9 +3,9 @@ version 39
 __lua__
 debug = true
 
-actor = {}
+actors = {}
 player = {}
-actor_sprites = {
+food_sprites = {
   ["plankton"] = {32},
   ["krill"] = {33},
   ["shrimp"] = {34, 35},
@@ -13,25 +13,25 @@ actor_sprites = {
 }
 particles = {}
 
-
 function _init()
   player = make_player(60, 60, 6, 6)
-  -- player.set_accel()
-  -- player.set_friction()
   cam = make_camera()
-  make_actor("plankton", 90, 90, 7, 7, 32)
-  make_actor("plankton", 20, 90, 7, 7, 32)
-  make_actor("plankton", 90, 20, 7, 7, 32)
-  make_actor("plankton", 20, 20, 7, 7, 32)
-  make_actor("plankton", 40, 40, 7, 7, 32)
-  make_actor("plankton", 40, 70, 7, 7, 32)
-  make_actor("plankton", 70, 40, 7, 7, 32)
-  make_actor("plankton", 70, 70, 7, 7, 32)
+  make_actor("plankton", 60, 90, 7, 7, 32)
+  make_actor("plankton", 90, 60, 7, 7, 32)
+  -- make_actor("plankton", 90, 20, 7, 7, 32)
+  -- make_actor("plankton", 20, 20, 7, 7, 32)
+  -- make_actor("plankton", 40, 40, 7, 7, 32)
+  -- make_actor("plankton", 40, 70, 7, 7, 32)
+  -- make_actor("plankton", 70, 40, 7, 7, 32)
+  -- make_actor("plankton", 70, 70, 7, 7, 32)
 end 
 
 function _update()
   player.move()
   cam.cameraDraw()
+  while #actors < 8 do
+    spawn_food()
+  end
   collisions()
   foreach(particles, update_particles)
 end
@@ -40,15 +40,15 @@ function _draw()
   cls(1)
   map(0,0,0,0,200,200)
   foreach(particles, draw_particles)
-  for i = 1, #actor do
-    if(actor[i].kind != "player") then
-      actor[i].draw_actor()
+  for i = 1, #actors do
+    if(actors[i].kind != "player") then
+      actors[i].draw_actor()
     end
   end
   player.draw_actor()
   --debug prints
   if debug == true then
-    -- print(player.x)
+    print(player.x)
     -- print(player.x+player.w)
     -- print(cam.posX)
     -- print(player.radius)
@@ -60,7 +60,7 @@ function _draw()
 end
 
 function collisions()
-  for a1 in all(actor) do
+  for a1 in all(actors) do
    collide(player,a1)
   end
 end
@@ -69,8 +69,8 @@ function collide(a1, a2)
   if (a1==a2) then return end
   xdist = a1.xCen() - a2.xCen()
   ydist = a1.yCen() - a2.yCen()
-  if xdist > 160 or ydist > 160 then
-    del(actor, a2)
+  if xdist > 256 or ydist > 256 then
+    del(actors, a2)
   end
   if xdist < a1.radius + 4 and ydist < a1.radius + 4 then
     if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist)-(a2.w*a2.h) then
@@ -112,7 +112,7 @@ function make_actor(k,x,y,h,w,s)
       pset(a.x+a.w, a.y+a.h, 7)
     end
   end
-  add(actor, a)
+  add(actors, a)
   return a
 end
 
@@ -253,8 +253,22 @@ end
 function eat(pl, t)
   eated = true
   eat_fx(pl, t)
-  del(actor, t)
+  del(actors, t)
   pl.add_mass(4)
+end
+
+function spawn_food()
+  local spawnDir = flr(rnd(4))
+  local offset = flr(rnd(128))-64
+  local x
+  local y
+  if spawnDir == 0 then x,y = 70,offset end
+  if spawnDir == 1 then x,y = -70,offset end
+  if spawnDir == 2 then x,y = offset,70 end
+  if spawnDir == 3 then x,y = offset,-70 end
+  --printh(spawnDir)
+  printh(cam.posX)
+  make_actor("food", x+cam.posX+64, y+cam.posY+64, 7, 7, 32) --make_actor(k,x,y,h,w,s)
 end
 
 function eat_fx (pl, t)
