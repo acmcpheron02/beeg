@@ -67,19 +67,15 @@ end
 
 function collide(a1, a2)
   if (a1==a2) then return end
-  xdist = (a1.xCen() - a2.xCen())
-  ydist = (a1.yCen() - a2.yCen())
-  if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist) then
-    printh("radius")
-    printh(a1.radius)
-    printh("radius^2")
-    printh(a1.radius*a1.radius)
-    printh("xdist")
-    printh(xdist)
-    printh("ydist")
-    printh(ydist)
-    printh(xdist * xdist + ydist * ydist)
-    collide_event(a1, a2)
+  xdist = a1.xCen() - a2.xCen()
+  ydist = a1.yCen() - a2.yCen()
+  if xdist > 160 or ydist > 160 then
+    del(actor, a2)
+  end
+  if xdist < a1.radius + 4 and ydist < a1.radius + 4 then
+    if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist) then
+      collide_event(a1, a2)
+    end
   end
 end
 
