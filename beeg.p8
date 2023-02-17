@@ -72,7 +72,7 @@ end
 
 function title_draw()
   cls()
-  sspr(0, 32, 64, 32, 0, 0, 64*pulse, 32*pulse)
+  sspr(0, 32, 64, 32, 32-(32*pulse-32), 16-(16*pulse-16), 64*pulse, 32*pulse)
   print(pulse)
 end
 
