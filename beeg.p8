@@ -4,6 +4,7 @@ __lua__
 debug = true
 
 scene = "title"
+ani = -1
 ti = 4
 actors = {}
 player = {}
@@ -26,6 +27,7 @@ particles = {}
 function _init() end 
 
 function _update()
+  adv_frame()
   if scene == "title" then title_update() end
 
   -- player.move()
@@ -40,6 +42,9 @@ end
 
 function _draw()
   if scene == "title" then title_draw() end
+  print(ani)
+  print(ani%4+1)
+  print(127%8)
 
   -- cls(1)
   -- map(0,0,0,0,200,200)
@@ -64,19 +69,20 @@ function _draw()
 end
 
 function title_update()
-  pulseSizes = {1.5, 1.52, 1.58, 1.65, 1.7, 1.7, 1.7, 1.71, 1.71, 1.71, 1.71, 1.7, 1.7, 1.7, 1.65, 1.58, 1.52}
-  pulse = pulseSizes[flr(ti/4)]
-  ti +=1
-  if ti/4 > #pulseSizes then ti = 4 end
+  pulse = 1
+  if ani < 64 then pulse = 1 + ((ani/128)) end
+  if ani >= 64 then pulse = 1.5 - ((ani%64)/128) end
+  --if ani >= 120 then pulse = 1 end
 end
 
 function title_draw()
   cls(14)
-  circfill(122, 70, 8, 9)
-  rectfill(0,78,128,128,1)
-  sspr(64, 32, 64, 16, 0, 70)
-  sspr(64, 32, 64, 16, 64, 70)
-  sspr(0, 32, 64, 32, 32-(32*pulse-32), 22-(16*pulse-16), 64*pulse, 32*pulse)
+  circfill(122, 74, 8, 9)
+  rectfill(0,80,128,128,1)
+  sspr(64, 32, 64, 16, ani/2-64, (ani/32)%2 + 74)
+  sspr(64, 32, 64, 16, ani/2, (ani/32)%2 + 74)
+  sspr(64, 32, 64, 16, ani/2+64, (ani/32)%2 + 74)
+  sspr(0, 32, 64, 32, 33-(32*pulse-32), 28-(16*pulse-16), 64*pulse, 32*pulse)
   --print(pulse)
   print("press X to get beeg!", 24, 100, 9)
 end
@@ -353,6 +359,12 @@ function draw_particles(fx)
   if fx.dur != 7 and fx.dur != 6 and fx.dur != 2 then 
     pset(fx.x, fx.y, fx.pal) else return 
   end
+end
+
+function adv_frame()
+  local reset = 127
+  if ani < reset then ani += 1 end
+  if ani >= reset then ani = 0 end
 end
 
 
