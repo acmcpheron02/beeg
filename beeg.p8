@@ -84,7 +84,7 @@ function title_draw()
   sspr(64, 32, 64, 16, ani/2+64, (ani/32)%2 + 80)
   sspr(0, 32, 64, 32, 32-(32*pulse-32), 36-(16*pulse-16), 64*pulse, 32*pulse)
   --print(pulse)
-  print("press X to get beeg!", 24, 110, 9)
+  print("press X to get beeg!", 24, 106, 6)
 end
 
 function stage1_init()
