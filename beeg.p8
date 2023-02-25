@@ -5,7 +5,7 @@ debug = true
 
 scene = "title"
 ani = -1
-ti = 4
+ti = 5
 actors = {}
 player = {}
 title = {
@@ -29,43 +29,17 @@ function _init() end
 function _update()
   adv_frame()
   if scene == "title" then title_update() end
-
-  -- player.move()
-  -- cam.cameraDraw()
-  -- while #actors < 8 do
-  --   spawn_food()
-  -- end
-  -- collisions()
-  -- foreach(particles, update_particles)
-
+  if scene == "trans" then trans_update() end
+  if scene == "lvl1" then lvl1_update() end
 end
 
 function _draw()
   if scene == "title" then title_draw() end
-  --print(ani)
-  --print(ani%4+1)
-  --print(127%8)
-
-  -- cls(1)
-  -- map(0,0,0,0,200,200)
-  -- foreach(particles, draw_particles)
-  -- for i = 1, #actors do
-  --   if(actors[i].kind != "player") then
-  --     actors[i].draw_actor()
-  --   end
-  -- end
-  -- player.draw_actor()
-  -- --debug prints
-  -- if debug == true then
-  --   print(player.x)
-  --   -- print(player.x+player.w)
-  --   -- print(cam.posX)
-  --   -- print(player.radius)
-  --   -- print("bounds = 24")
-  --   -- print("offset = 64")
-  --   -- print("threshold = 88")
-  --   collisions()
-  -- end
+  if scene == "trans" then trans_draw() end
+  if scene == "lvl1" then lvl1_draw() end
+  --debug prints
+  if debug == true then
+  end
 end
 
 function title_update()
@@ -73,12 +47,13 @@ function title_update()
   if ani < 64 then pulse = 1 + ((ani/256)) end
   if ani >= 64 then pulse = 1.25 - ((ani%64)/256) end
   --if ani >= 120 then pulse = 1 end
+  if btn(5) then scene = "trans" end
 end
 
 function title_draw()
   cls(0)
   circfill(5, 20, 12, 6)
-  rectfill(0,88,128,128,1)
+  rectfill(0,88,128,10028,1)
   sspr(64, 32, 64, 16, ani/2-64, (ani/32)%2 + 80)
   sspr(64, 32, 64, 16, ani/2, (ani/32)%2 + 80)
   sspr(64, 32, 64, 16, ani/2+64, (ani/32)%2 + 80)
@@ -87,11 +62,50 @@ function title_draw()
   print("press X to get beeg!", 24, 106, 6)
 end
 
-function stage1_init()
+function trans_update ()
+  if ti < 500 then
+    ti *= 1.1
+    title_update()
+    camera(0, flr(ti)-5)
+  end
+  if ti >= 500 then
+    ti = 5
+    scene = "lvl1"
+    lvl1_init()
+  end
+end
+
+function trans_draw()
+  title_draw()
+end
+
+function lvl1_init()
   player = make_player(600, 600, 6, 6)
   cam = make_camera()
   make_actor("plankton", 620, 620, 7, 7, 32)
   make_actor("plankton", 620, 580, 7, 7, 32)
+end
+
+function lvl1_draw()
+  cls(1)
+  map(0,0,0,0,200,200)
+  foreach(particles, draw_particles)
+  for i = 1, #actors do
+    if(actors[i].kind != "player") then
+      actors[i].draw_actor()
+    end
+  end
+  player.draw_actor()
+end
+
+function lvl1_update()
+  player.move()
+  cam.cameraDraw()
+  while #actors < 8 do
+    spawn_food()
+  end
+  collisions()
+  foreach(particles, update_particles)
 end
 
 function collisions()
@@ -256,8 +270,8 @@ end
 
 function make_camera()
   local c = {}
-  c.posX = 0
-  c.posY = 0
+  c.posX = player.x
+  c.posY = player.y
   function c.cameraDraw()
     local bounds = 24
     local offset = 64
