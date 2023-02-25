@@ -6,11 +6,12 @@ debug = false
 scene = "title"
 ani = -1
 ti = 5
+timer = 0
 actors = {}
 player = {}
 title = {
   ["size"] = 1,
-  ["posX"] = 32,
+  ["posx"] = 32,
   ["posy"] = 32,
   ["w"] = 62,
   ["h"] = 32
@@ -59,7 +60,7 @@ function title_draw()
   sspr(64, 32, 64, 16, ani/2+64, (ani/32)%2 + 80)
   sspr(0, 32, 64, 32, 32-(32*pulse-32), 20-(16*pulse-16), 64*pulse, 32*pulse)
   print("by cody mcpheron", 32, 62, 6) --16 char
-  print("press x to get beeg!", 24, 106, 6) --20 char
+  print("press x to get beeg!", 26, 106, 6) --20 char
 end
 
 function trans_update ()
@@ -88,7 +89,6 @@ end
 
 function lvl1_draw()
   cls(1)
-  map(0,0,0,0,200,200)
   foreach(particles, draw_particles)
   for i = 1, #actors do
     if(actors[i].kind != "player") then
@@ -96,6 +96,12 @@ function lvl1_draw()
     end
   end
   player.draw_actor()
+  circfill(cam.posx+8, cam.posy, 22, 8)
+  print("size:", cam.posx + 3, cam.posy + 2, 10) 
+  print(format(player.mass, 2), cam.posx + 3, cam.posy + 10, 10)
+  circfill(cam.posx+119, cam.posy, 22, 8)
+  print("time:", cam.posx + 107, cam.posy + 2, 10)
+  print(flr(timer), cam.posx + 126 - #tostr(flr(timer))*4, cam.posy + 10, 10)
 end
 
 function lvl1_update()
@@ -106,6 +112,13 @@ function lvl1_update()
   end
   collisions()
   foreach(particles, update_particles)
+  timer += 0.033
+end
+
+function format(n,d)
+  return
+    flr(n) .. "." ..
+    flr(n%1 * 10^d)
 end
 
 function collisions()
@@ -192,7 +205,7 @@ function make_player(x,y,h,w)
   p.dy = 0
   p.x_speed = 0
   p.y_speed = 0
-  p.mass = 20
+  p.mass = 20.0
   p.base_accel = 1.2
   p.base_friction = .45
   p.base_mass = 20
@@ -270,32 +283,32 @@ end
 
 function make_camera()
   local c = {}
-  c.posX = player.x - 62
-  c.posY = player.y - 62
+  c.posx = player.x - 62
+  c.posy = player.y - 62
   function c.cameraDraw()
     local bounds = 24
     local offset = 64
     --right bounds
-    if (player.x+player.w-offset > c.posX + bounds) then c.posX = player.x + player.w - offset - bounds end
+    if (player.x+player.w-offset > c.posx + bounds) then c.posx = player.x + player.w - offset - bounds end
     --left bounds
-    if (player.x-offset < c.posX - bounds) then c.posX = player.x - offset + bounds end
+    if (player.x-offset < c.posx - bounds) then c.posx = player.x - offset + bounds end
     --lower bounds
-    if (player.y+player.h-offset > bounds + c.posY) then c.posY = player.y + player.h - offset - bounds end
+    if (player.y+player.h-offset > bounds + c.posy) then c.posy = player.y + player.h - offset - bounds end
     --upper bounds
-    if (player.y-offset < c.posY - bounds) then c.posY = player.y - offset + bounds end
-    camera(c.posX, c.posY)
+    if (player.y-offset < c.posy - bounds) then c.posy = player.y - offset + bounds end
+    camera(c.posx, c.posy)
   end
   return c
 end
 
 function attach(pl, t)
-  local tr = 5 --target ratio
+  local tr = 4 --target ratio
   local er = sqrt(pl.size)*0.4 --eat range
   t.x=(pl.x*t.attSp + t.x*tr)/(t.attSp+tr)
   t.y=(pl.y*t.attSp + t.y*tr)/(t.attSp+tr)
   if abs(t.x-pl.x) < er and abs(t.y-pl.y) < er then
     eat(pl, t)
-  else t.attSp += 0.5
+  else t.attSp += 0.8
   end
 end
 
@@ -303,19 +316,20 @@ function eat(pl, t)
   eated = true
   eat_fx(pl, t)
   del(actors, t)
-  pl.add_mass(4)
+  pl.add_mass(1.1)
 end
 
 function spawn_food()
   local spawnDir = flr(rnd(4))
   local offset = flr(rnd(128))-64
+  local soff = flr(rnd(24))
   local x
   local y
-  if spawnDir == 0 then x,y = 74,offset end
-  if spawnDir == 1 then x,y = -74,offset end
-  if spawnDir == 2 then x,y = offset,74 end
-  if spawnDir == 3 then x,y = offset,-74 end
-  make_actor("food", x+cam.posX+64, y+cam.posY+64, 7, 7, 32) --make_actor(k,x,y,h,w,s)
+  if spawnDir == 0 then x,y = 64+soff,offset end
+  if spawnDir == 1 then x,y = -64-soff,offset end
+  if spawnDir == 2 then x,y = offset,64+soff end
+  if spawnDir == 3 then x,y = offset,-64-soff end
+  make_actor("food", x+cam.posx+64, y+cam.posy+64, 7, 7, 32) --make_actor(k,x,y,h,w,s)
 end
 
 function eat_fx (pl, t)
