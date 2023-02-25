@@ -57,9 +57,9 @@ function title_draw()
   sspr(64, 32, 64, 16, ani/2-64, (ani/32)%2 + 80)
   sspr(64, 32, 64, 16, ani/2, (ani/32)%2 + 80)
   sspr(64, 32, 64, 16, ani/2+64, (ani/32)%2 + 80)
-  sspr(0, 32, 64, 32, 32-(32*pulse-32), 36-(16*pulse-16), 64*pulse, 32*pulse)
-  --print(pulse)
-  print("press X to get beeg!", 24, 106, 6)
+  sspr(0, 32, 64, 32, 32-(32*pulse-32), 20-(16*pulse-16), 64*pulse, 32*pulse)
+  print("by cody mcpheron", 32, 62, 6) --16 char
+  print("press x to get beeg!", 24, 106, 6) --20 char
 end
 
 function trans_update ()
@@ -101,7 +101,7 @@ end
 function lvl1_update()
   player.move()
   cam.cameraDraw()
-  while #actors < 8 do
+  while #actors < 16 do
     spawn_food()
   end
   collisions()
@@ -118,7 +118,7 @@ function collide(a1, a2)
   if (a1==a2) then return end
   xdist = a1.xCen() - a2.xCen()
   ydist = a1.yCen() - a2.yCen()
-  if xdist > 256 or ydist > 256 then
+  if abs(xdist) > 150 or abs(ydist) > 150 then
     del(actors, a2)
   end
   if xdist < a1.radius + 4 and ydist < a1.radius + 4 then
@@ -315,8 +315,6 @@ function spawn_food()
   if spawnDir == 1 then x,y = -74,offset end
   if spawnDir == 2 then x,y = offset,74 end
   if spawnDir == 3 then x,y = offset,-74 end
-  --printh(spawnDir)
-  printh(cam.posX)
   make_actor("food", x+cam.posX+64, y+cam.posY+64, 7, 7, 32) --make_actor(k,x,y,h,w,s)
 end
 
