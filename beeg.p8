@@ -1,7 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 39
 __lua__
-debug = true
+debug = false
 
 scene = "title"
 ani = -1
@@ -270,8 +270,8 @@ end
 
 function make_camera()
   local c = {}
-  c.posX = player.x
-  c.posY = player.y
+  c.posX = player.x - 62
+  c.posY = player.y - 62
   function c.cameraDraw()
     local bounds = 24
     local offset = 64
@@ -289,13 +289,13 @@ function make_camera()
 end
 
 function attach(pl, t)
-  local tr = 75 --target ratio
+  local tr = 5 --target ratio
   local er = sqrt(pl.size)*0.4 --eat range
   t.x=(pl.x*t.attSp + t.x*tr)/(t.attSp+tr)
   t.y=(pl.y*t.attSp + t.y*tr)/(t.attSp+tr)
   if abs(t.x-pl.x) < er and abs(t.y-pl.y) < er then
     eat(pl, t)
-  else t.attSp += 1
+  else t.attSp += 0.5
   end
 end
 
