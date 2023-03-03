@@ -208,7 +208,7 @@ function make_player(x,y,h,w)
     p.size = 2 + flr((p.mass - p.base_mass)/4)
   end
   function p.set_accel()
-    local accel = mid(5, p.base_accel - (p.mass - p.base_mass)/10, 0.5)
+    local accel = mid(2, p.base_accel - (p.mass - p.base_mass)/10, 0.25)
     p.accel = accel
     return accel
   end
@@ -233,10 +233,10 @@ function make_player(x,y,h,w)
   p.x_speed = 0
   p.y_speed = 0
   p.mass = 20.0
-  p.base_accel = 1.2
+  p.base_accel = 0.6
   p.base_friction = .45
   p.base_mass = 20
-  p.max_speed = 4
+  p.max_speed = 3
   p.stop_under = 0.05
   p.size = 2
   p.accel = 0
