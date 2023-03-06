@@ -1,22 +1,28 @@
 pico-8 cartridge // http://www.pico-8.com
 version 39
 __lua__
-
 debug = false
 
-scene = "title"
-ani = -1
-ti = 5
-timer = 0
-actors = {}
-player = {}
 title = {
-  ["size"] = 1,
-  ["posx"] = 32,
-  ["posy"] = 32,
-  ["w"] = 62,
-  ["h"] = 32
-  }
+    ["size"] = 1,
+    ["posx"] = 32,
+    ["posy"] = 32,
+    ["w"] = 62,
+    ["h"] = 32
+    }
+-- scene = "title"
+-- ani = -1
+-- ti = 5
+-- timer = 0
+-- actors = {}
+-- player = {}
+-- title = {
+--   ["size"] = 1,
+--   ["posx"] = 32,
+--   ["posy"] = 32,
+--   ["w"] = 62,
+--   ["h"] = 32
+--   }
 
 food_sprites = {
   ["plankton"] = {32, 33},
@@ -26,22 +32,35 @@ food_sprites = {
 }
 particles = {}
 
-function _init() end 
+function _init() 
+    initsteps()
+end 
+
+function initsteps()
+    scene = "title"
+    ani = -1
+    ti = 5
+    timer = 0
+    actors = {}
+    player = {}
+    cam = nil
+    camera(0,0)
+end
+
 
 function _update()
   adv_frame()
   if scene == "title" then title_update() end
   if scene == "trans" then trans_update() end
   if scene == "lvl1" then lvl1_update() end
+  if scene == "gameover" then gameover_update() end
 end
 
 function _draw()
   if scene == "title" then title_draw() end
   if scene == "trans" then trans_draw() end
   if scene == "lvl1" then lvl1_draw() end
-  --debug prints
-  if debug == true then
-  end
+  if scene == "gameover" then gameover_draw() end
 end
 
 function title_update()
@@ -49,7 +68,7 @@ function title_update()
   if ani < 64 then pulse = 1 + ((ani/256)) end
   if ani >= 64 then pulse = 1.25 - ((ani%64)/256) end
   --if ani >= 120 then pulse = 1 end
-  if btn(5) then scene = "trans" end
+  if btnp(5) then scene = "trans" end
 end
 
 function title_draw()
@@ -122,6 +141,18 @@ function lvl1_update()
     actors[i].move_actor()
   end
   timer += 0.033
+end
+
+function gameover_update()
+  if btnp(5) then initsteps() end
+end
+
+function gameover_draw()
+  print("game over!", cam.posx + 48, cam.posy+26, 7)
+  print("YOU AREN'T", cam.posx + 48, cam.posy+50, 7)
+  print("beeg", cam.posx + 60, cam.posy+60, 8)
+  print("ENOUGH TO CONTINUE!", cam.posx +28 , cam.posy+70, 7)
+  print("press x to try again!", cam.posx +28 , cam.posy+94, 7)
 end
 
 function format(n,d)
@@ -235,7 +266,7 @@ function make_food(k,x,y,h,w,s,ivl)
     p.dy = 0
     p.x_speed = 0
     p.y_speed = 0
-    p.mass = 20.0
+    p.mass = 11.0
     p.base_accel = 0.55
     p.base_friction = .45
     p.base_mass = 20
@@ -254,6 +285,7 @@ function make_food(k,x,y,h,w,s,ivl)
     }
     function p.add_mass(m)
       p.mass += m
+      if p.mass <= 9.9 then scene = "gameover" end
       p.set_accel()
       p.set_friction()
       p.set_size()
@@ -275,6 +307,10 @@ function make_food(k,x,y,h,w,s,ivl)
       p.x += p.x_speed
       p.y += p.y_speed
       if ani%6 == 0 then bubbles_fx(p) end
+      if p.dx != 0 or p.dy != 0 then
+        local cost = -0.002 * p.mass
+        p.add_mass(cost)
+      end
     end
     
     function p.draw_actor()
@@ -340,7 +376,7 @@ function make_food(k,x,y,h,w,s,ivl)
   
   function attach(pl, t)
     local tr = 4 --target ratio
-    local er = sqrt(pl.size)*0.4 --eat range
+    local er = mid(1, sqrt(pl.size)*0.5, 100) --eat range
     t.x=(pl.x*t.attSp + t.x*tr)/(t.attSp+tr)
     t.y=(pl.y*t.attSp + t.y*tr)/(t.attSp+tr)
     if abs(t.x-pl.x) < er and abs(t.y-pl.y) < er then
