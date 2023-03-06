@@ -10,19 +10,6 @@ title = {
     ["w"] = 62,
     ["h"] = 32
     }
--- scene = "title"
--- ani = -1
--- ti = 5
--- timer = 0
--- actors = {}
--- player = {}
--- title = {
---   ["size"] = 1,
---   ["posx"] = 32,
---   ["posy"] = 32,
---   ["w"] = 62,
---   ["h"] = 32
---   }
 
 food_sprites = {
   ["plankton"] = {32, 33},
@@ -30,7 +17,6 @@ food_sprites = {
   ["fish"] = {36, 37},
   ["jellyfish"] = {38, 39}
 }
-particles = {}
 
 function _init() 
     initsteps()
@@ -45,6 +31,7 @@ function initsteps()
     player = {}
     cam = nil
     camera(0,0)
+    particles = {}
 end
 
 
