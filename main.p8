@@ -14,8 +14,7 @@ title = {
 food_sprites = {
   ["plankton"] = {32, 33},
   ["krill"] = {34, 35},
-  ["fish"] = {36, 37},
-  ["jellyfish"] = {38, 39}
+  ["fish"] = {36, 37}
 }
 
 function _init() 
@@ -90,10 +89,10 @@ end
 function lvl1_init()
   player = make_player(300, 300, 6, 6)
   cam = make_camera()
-  make_food("food", 320, 320, 7, 7, food_sprites["plankton"], 16)
-  make_food("food", 280, 320, 7, 7, food_sprites["plankton"], 16)
-  make_food("food", 320, 280, 7, 7, food_sprites["plankton"], 16)
-  make_food("food", 280, 280, 7, 7, food_sprites["plankton"], 16)
+  make_food("food", 330, 300, 7, 7, food_sprites["plankton"], 16)
+  make_food("food", 300, 330, 7, 7, food_sprites["plankton"], 16)
+  make_food("food", 270, 300, 7, 7, food_sprites["plankton"], 16)
+  make_food("food", 300, 270, 7, 7, food_sprites["plankton"], 16)
 end
 
 function lvl1_draw()
@@ -119,7 +118,7 @@ end
 function lvl1_update()
   player.move()
   cam.cameraDraw()
-  while #actors < 16 do
+  while #actors < 18 do
     spawn_food()
   end
   collisions()
@@ -196,13 +195,9 @@ function make_food(k,x,y,h,w,s,ivl)
     function a.draw_actor()
       frame = flr((ani%16)/8)+1
       local sprnow = a.sprite[frame]
-      spr(sprnow, a.x, a.y, 1, 1, a.xFlipped)
-      if debug == true then
-        pset(a.x, a.y, 7)
-        pset(a.x, a.y+a.h, 7)
-        pset(a.x+a.w, a.y, 7)
-        pset(a.x+a.w, a.y+a.h, 7)
-      end
+      if sprnow == 37 then sspr(32,16,16,16,a.x,a.y,1,1) end
+      if sprnow == 38 then sspr(48,16,16,16,a.x,a.y,1,1) end
+      if sprnow != 37 and sprnow != 38 then spr(sprnow, a.x, a.y, 1, 1, a.xFlipped) end
     end
     function a.move_actor()
       if a.aniseed == nil then
@@ -253,7 +248,7 @@ function make_food(k,x,y,h,w,s,ivl)
     p.dy = 0
     p.x_speed = 0
     p.y_speed = 0
-    p.mass = 15.0
+    p.mass = 18.0
     p.base_accel = 0.55
     p.base_friction = .45
     p.base_mass = 20
@@ -376,20 +371,32 @@ function make_food(k,x,y,h,w,s,ivl)
     eated = true
     eat_fx(pl, t)
     del(actors, t)
-    pl.add_mass(1.1)
+    if t.sprite == food_sprites["plankton"] then calorie = 1.1 end
+    if t.sprite == food_sprites["krill"] then calorie = 2.5 end
+    if t.sprite == food_sprites["fish"] then calorie = 5 end
+    pl.add_mass(calorie)
   end
   
   function spawn_food()
     local spawnDir = flr(rnd(4))
     local offset = flr(rnd(128))-64
     local soff = flr(rnd(24))
+    local food_seed = flr(rnd(player.mass*player.mass))
     local x
     local y
     if spawnDir == 0 then x,y = 64+soff,offset end
     if spawnDir == 1 then x,y = -64-soff,offset end
     if spawnDir == 2 then x,y = offset,64+soff end
     if spawnDir == 3 then x,y = offset,-64-soff end
-    make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["plankton"],16) --make_food(k,x,y,h,w,s,ivl)
+    if food_seed <= 250 then
+      make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["plankton"],16)
+    end
+    if food_seed <= 900 and food_seed > 250 then
+      make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["krill"],16)
+    end
+    if food_seed > 900 then
+        make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["fish"],16)
+    end
   end
   
   function bubbles_fx(pl)
