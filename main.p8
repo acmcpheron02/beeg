@@ -29,9 +29,9 @@ function initsteps()
     timer = 0
     actors = {}
     player = {}
+    particles = {}
     cam = nil
     camera(0,0)
-    particles = {}
 end
 
 
@@ -253,7 +253,7 @@ function make_food(k,x,y,h,w,s,ivl)
     p.dy = 0
     p.x_speed = 0
     p.y_speed = 0
-    p.mass = 11.0
+    p.mass = 15.0
     p.base_accel = 0.55
     p.base_friction = .45
     p.base_mass = 20
