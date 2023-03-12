@@ -87,6 +87,7 @@ end
 function lvl1_init()
   player = make_player(300, 300, 6, 6)
   cam = make_camera()
+  make_krill(270, 300)
   make_plankton(330, 300)
   -- make_food("food", 330, 300, 7, 7, food_sprites["plankton"], 16)
   -- make_food("food", 300, 330, 7, 7, food_sprites["plankton"], 16)
@@ -328,15 +329,13 @@ function make_food(k,x,y,h,w)
       --   a.x += rnd(4)-2
       --   a.y += rnd(4)-2
     end
-    add(actors, a)
+
     return a
   end
 
   function make_plankton(x,y)
       --make_food(k,x,y,h,w)
-    a = make_food("plankton",x,y,6,6)
-    local sp1 = {0, 16, 6, 6}
-    local sp2 = {8, 16, 6, 6}
+    local a = make_food("plankton",x,y,6,6)
     a.drawloop = {}
     a.updateloop = {}
 
@@ -368,8 +367,6 @@ function make_food(k,x,y,h,w)
     end
 
     function a.draw_actor()
-      print(a.drawloop[1], 330, 330, 11)
-      print(#a.drawloop, 330, 340, 11)
       if #a.drawloop <= 0 then
         a.loop_draw()
       end
@@ -402,7 +399,92 @@ function make_food(k,x,y,h,w)
         deli(a.updateloop, 1)
       end
     end
+
+    add(actors, a)
+    return a
   end
+
+  function make_krill(x,y)
+    --make_food(k,x,y,h,w)
+  local a = make_food("krill",x,y,8,8)
+  a.drawloop = {}
+  a.updateloop = {}
+
+  function a.loop_draw()
+    for i=1,9 do
+      add(a.drawloop, 2)
+    end
+    for i=1,5 do
+      add(a.drawloop, 1)
+    end
+    for i=1,9 do
+      add(a.drawloop, 2)
+    end
+    for i=1,9 do
+      add(a.drawloop, 4)
+    end
+    for i=1,5 do
+      add(a.drawloop, 3)
+    end
+    for i=1,9 do
+      add(a.drawloop, 4)
+    end
+  end
+
+  function a.loop_update()
+    local range = 4
+    local target = flr(rnd(range))+1
+    for i=1,range do
+      if i==target then
+        add(a.updateloop, 2)
+      else
+        add(a.updateloop, 1)
+      end
+    end
+  end
+
+  function a.draw_actor()
+    if #a.drawloop <= 0 then
+      a.loop_draw()
+    end
+    if a.drawloop[1] == 1 then
+      sspr(16, 16, 8, 8, a.x, a.y)
+      deli(a.drawloop, 1)
+    end
+    if a.drawloop[1] == 2 then
+      sspr(24, 16, 8, 8, a.x, a.y)
+      deli(a.drawloop, 1)
+    end
+    if a.drawloop[1] == 3 then
+      sspr(16, 16, 8, 8, a.x, a.y, 8, 8, 1)
+      deli(a.drawloop, 1)
+    end
+    if a.drawloop[1] == 4 then
+      sspr(24, 16, 8, 8, a.x, a.y, 8, 8, 1)
+      deli(a.drawloop, 1)
+    end
+  end
+
+  function a.update_actor()
+    if #a.updateloop <= 0 then
+      a.loop_update()
+    end
+    if a.updateloop[1] == 1 then
+      deli(a.updateloop, 1)
+    end
+    if a.updateloop[1] == 2 then
+      local xoff = rnd(2)-1
+      local yoff = rnd(4)-3
+      a.x += xoff
+      a.y += yoff
+      deli(a.updateloop, 1)
+    end
+  end
+
+  add(actors, a)
+  return a
+end
+
 
   function make_camera()
     local c = {}
