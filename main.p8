@@ -411,23 +411,11 @@ function make_food(k,x,y,h,w)
   a.updateloop = {}
 
   function a.loop_draw()
-    for i=1,9 do
+    for i=1,16 do
       add(a.drawloop, 2)
     end
-    for i=1,5 do
+    for i=1,8 do
       add(a.drawloop, 1)
-    end
-    for i=1,9 do
-      add(a.drawloop, 2)
-    end
-    for i=1,9 do
-      add(a.drawloop, 4)
-    end
-    for i=1,5 do
-      add(a.drawloop, 3)
-    end
-    for i=1,9 do
-      add(a.drawloop, 4)
     end
   end
 
@@ -448,19 +436,11 @@ function make_food(k,x,y,h,w)
       a.loop_draw()
     end
     if a.drawloop[1] == 1 then
-      sspr(16, 16, 8, 8, a.x, a.y)
+      sspr(16, 16, 8, 8, a.x, a.y, 8, 8, a.xFlipped, false)
       deli(a.drawloop, 1)
     end
     if a.drawloop[1] == 2 then
-      sspr(24, 16, 8, 8, a.x, a.y)
-      deli(a.drawloop, 1)
-    end
-    if a.drawloop[1] == 3 then
-      sspr(16, 16, 8, 8, a.x, a.y, 8, 8, 1)
-      deli(a.drawloop, 1)
-    end
-    if a.drawloop[1] == 4 then
-      sspr(24, 16, 8, 8, a.x, a.y, 8, 8, 1)
+      sspr(24, 16, 8, 8, a.x, a.y, 8, 8, a.xFlipped, false)
       deli(a.drawloop, 1)
     end
   end
@@ -474,9 +454,12 @@ function make_food(k,x,y,h,w)
     end
     if a.updateloop[1] == 2 then
       local xoff = rnd(2)-1
-      local yoff = rnd(4)-3
+      local yoff = rnd(4)-2.5
+      print(xoff, 340, 300, 11)
       a.x += xoff
       a.y += yoff
+      if xoff > 0 then a.xFlipped = true end
+      if xoff < 0 then a.xFlipped = false end
       deli(a.updateloop, 1)
     end
   end
