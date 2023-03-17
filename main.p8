@@ -33,6 +33,7 @@ function _draw()
   pal(3, 138, 1)
   pal(4, 143, 1)
   pal(10, 135, 1)
+  pal(5, 142, 1)
   poke(0x5f2e,1)
 
   if scene == "title" then title_draw() end
@@ -280,6 +281,7 @@ function make_player(x,y,h,w)
     if p.dx != 0 then psprite = p.anim["side"] end
     if p.dy > 0 then psprite = p.anim["down"] end
     if p.dy < 0 then psprite = p.anim["up"] end
+    ovalfill(p.x-p.size-1, p.y-p.size-1, p.x+p.w+p.size+1, p.y+p.h+p.size+1, 15)
     ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 8)
     sspr(psprite[1], psprite[2], psprite[3], psprite[4], p.x, p.y, psprite[3], psprite[4], p.xFlipped)
   end
@@ -299,6 +301,7 @@ function make_food(k,x,y,h,w)
     a.xFlipped = 0
     a.frame = 0
     a.atsp = 0
+    a.eatreq = 1000
     function a.xCen() 
       return a.x + a.w/2
     end 
@@ -315,6 +318,7 @@ function make_food(k,x,y,h,w)
 
 function make_plankton(x,y)
   local a = make_food("plankton",x,y,6,6) --make_food(k,x,y,h,w)
+  a.eatreq = 1 
   a.updateloop = {}
   a.drawloop = {}
 
