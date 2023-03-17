@@ -282,12 +282,6 @@ function make_player(x,y,h,w)
     if p.dy < 0 then psprite = p.anim["up"] end
     ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 8)
     sspr(psprite[1], psprite[2], psprite[3], psprite[4], p.x, p.y, psprite[3], psprite[4], p.xFlipped)
-    if debug == true then
-      pset(p.x, p.y, 7)
-      pset(p.x, p.y+p.h, 7)
-      pset(p.x+p.w, p.y, 7)
-      pset(p.x+p.w, p.y+p.h, 7)
-    end
   end
 
   p.add_mass(0)
@@ -320,8 +314,7 @@ function make_food(k,x,y,h,w)
   end
 
 function make_plankton(x,y)
-    --make_food(k,x,y,h,w)
-  local a = make_food("plankton",x,y,6,6)
+  local a = make_food("plankton",x,y,6,6) --make_food(k,x,y,h,w)
   a.updateloop = {}
   a.drawloop = {}
 
@@ -507,11 +500,9 @@ function spawn_food()
   if spawnDir == 2 then x,y =  offset, smalloff end
   if spawnDir == 3 then x,y = -offset, smalloff end
   if food_seed <= 250 then
-    --make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["plankton"],16)
     make_plankton(cam.posx+64+x,cam.posy+64+y)
   end
   if food_seed <= 900 and food_seed > 250 then
-    --make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["krill"],16)
     make_krill(cam.posx+64+x,cam.posy+64+y)
   end
   -- if food_seed > 900 then
