@@ -20,7 +20,7 @@ function initsteps()
 end
 
 function _update()
-  
+  adv_frame()
   if scene == "title" then title_update() end
   if scene == "trans" then trans_update() end
   if scene == "lvl1" then lvl1_update() end
@@ -42,7 +42,6 @@ function _draw()
 end
 
 function title_update()
-  adv_frame()
   pulse = 1
   if ani < 64 then pulse = 1 + ((ani/256)) end
   if ani >= 64 then pulse = 1.25 - ((ani%64)/256) end
@@ -117,9 +116,9 @@ end
 function lvl1_update()
   player.move()
   cam.cameraDraw()
-  -- while #actors < 18 do
-  --   spawn_food()
-  -- end
+  while #actors < 18 do
+    spawn_food()
+  end
   collisions()
   foreach(particles, update_particles)
   for i = 1, #actors do
@@ -174,21 +173,19 @@ function collide(a1, a2)
   if (a1==a2) then return end
   xdist = a1.xCen() - a2.xCen()
   ydist = a1.yCen() - a2.yCen()
-  if abs(xdist) > 150 or abs(ydist) > 150 then
+  if abs(xdist) > 250 or abs(ydist) > 250 then
     del(actors, a2)
   end
   if xdist < a1.radius + 4 and ydist < a1.radius + 4 then
-    if (a1.radius*a1.radius)>(xdist * xdist + ydist * ydist)-(a2.w*a2.h) then
+    if a1.radius+a2.w > sqrt(xdist * 0x0.0001 * xdist + ydist * 0x0.0001 * ydist) * 0x100 then ---(a2.w*a2.h)
       collide_event(a1, a2)
     end
   end
 end
 
 function collide_event(a1, a2)
-  if(a1.kind=="player") then
-    if(a2.kind!="player") then
-      attach(a1,a2)
-    end
+  if(a1.kind=="player") and (a2.kind!="player") then
+    attach(a1,a2)
   end
 end
 
@@ -294,7 +291,6 @@ function make_player(x,y,h,w)
   end
 
   p.add_mass(0)
-
   return p
 end
 
@@ -308,6 +304,7 @@ function make_food(k,x,y,h,w)
     a.w=w
     a.xFlipped = 0
     a.frame = 0
+    a.atsp = 0
     function a.xCen() 
       return a.x + a.w/2
     end 
@@ -315,112 +312,21 @@ function make_food(k,x,y,h,w)
       return a.y + a.h/2
     end 
     function a.draw_actor()
-      -- frame = flr((ani%16)/8)+1
-      -- local sprnow = a.sprite[frame]
-      -- if sprnow == 37 then sspr(32,16,16,16,a.x,a.y,1,1) end
-      -- if sprnow == 38 then sspr(48,16,16,16,a.x,a.y,1,1) end
-      -- if sprnow != 37 and sprnow != 38 then spr(sprnow, a.x, a.y, 1, 1, a.xFlipped) end
     end
     function a.move_actor()
-      -- if a.aniseed == nil then
-      --   a.aniseed = flr(rnd(a.interval))
-      -- end
-      -- if ani%16 == a.aniseed then
-      --   a.x += rnd(4)-2
-      --   a.y += rnd(4)-2
     end
 
     return a
   end
 
-  function make_plankton(x,y)
-      --make_food(k,x,y,h,w)
-    local a = make_food("plankton",x,y,6,6)
-    a.drawloop = {}
-    a.updateloop = {}
-
-    function a.loop_draw()
-      for i=1,12 do
-        add(a.drawloop, 1)
-      end
-      for i=1,6 do
-        add(a.drawloop, 2)
-      end
-      for i=1,12 do
-        add(a.drawloop, 1)
-      end
-      for i=1,6 do
-        add(a.drawloop, 3)
-      end
-    end
-
-    function a.loop_update()
-      local range = 10
-      local target = flr(rnd(range))+1
-      for i=1,range do
-        if i==target then
-          add(a.updateloop, 2)
-        else
-          add(a.updateloop, 1)
-        end
-      end
-    end
-
-    function a.draw_actor()
-      if #a.drawloop <= 0 then
-        a.loop_draw()
-      end
-      if a.drawloop[1] == 1 then
-        sspr(0, 16, 6, 6, a.x, a.y)
-        deli(a.drawloop, 1)
-      end
-      if a.drawloop[1] == 2 then
-        sspr(8, 16, 6, 6, a.x, a.y)
-        deli(a.drawloop, 1)
-      end
-      if a.drawloop[1] == 3 then
-        sspr(8, 16, 6, 6, a.x, a.y, 6, 6, 1)
-        deli(a.drawloop, 1)
-      end
-    end
-
-    function a.update_actor()
-      if #a.updateloop <= 0 then
-        a.loop_update()
-      end
-      if a.updateloop[1] == 1 then
-        deli(a.updateloop, 1)
-      end
-      if a.updateloop[1] == 2 then
-        local xoff = rnd(2)-1
-        local yoff = rnd(2)-1
-        a.x += xoff
-        a.y += yoff
-        deli(a.updateloop, 1)
-      end
-    end
-
-    add(actors, a)
-    return a
-  end
-
-  function make_krill(x,y)
+function make_plankton(x,y)
     --make_food(k,x,y,h,w)
-  local a = make_food("krill",x,y,8,8)
-  a.drawloop = {}
+  local a = make_food("plankton",x,y,6,6)
   a.updateloop = {}
-
-  function a.loop_draw()
-    for i=1,16 do
-      add(a.drawloop, 2)
-    end
-    for i=1,8 do
-      add(a.drawloop, 1)
-    end
-  end
+  a.drawloop = {}
 
   function a.loop_update()
-    local range = 4
+    local range = 10
     local target = flr(rnd(range))+1
     for i=1,range do
       if i==target then
@@ -431,6 +337,106 @@ function make_food(k,x,y,h,w)
     end
   end
 
+  function a.update_actor()
+    if #a.updateloop <= 0 then
+      a.loop_update()
+    end
+    if a.updateloop[1] == 1 then
+      deli(a.updateloop, 1)
+    end
+    if a.updateloop[1] == 2 then
+      local xoff = rnd(2)-1
+      local yoff = rnd(2)-1
+      a.x += xoff
+      a.y += yoff
+      deli(a.updateloop, 1)
+    end
+  end
+
+  function a.loop_draw()
+    for i=1,12 do
+      add(a.drawloop, 1)
+    end
+    for i=1,6 do
+      add(a.drawloop, 2)
+    end
+    for i=1,12 do
+      add(a.drawloop, 1)
+    end
+    for i=1,6 do
+      add(a.drawloop, 3)
+    end
+  end
+
+  function a.draw_actor()
+    if #a.drawloop <= 0 then
+      a.loop_draw()
+    end
+    if a.drawloop[1] == 1 then
+      sspr(0, 16, 6, 6, a.x, a.y)
+      deli(a.drawloop, 1)
+    end
+    if a.drawloop[1] == 2 then
+      sspr(8, 16, 6, 6, a.x, a.y)
+      deli(a.drawloop, 1)
+    end
+    if a.drawloop[1] == 3 then
+      sspr(8, 16, 6, 6, a.x, a.y, 6, 6, 1)
+      deli(a.drawloop, 1)
+    end
+  end
+
+  add(actors, a)
+  return a
+end
+
+function make_krill(x,y)
+  local a = make_food("krill",x,y,8,8) --make_food(k,x,y,h,w)
+  a.updateloop = {}
+  a.drawloop = {}
+
+  function a.loop_update()
+    local range = 12
+    local target = flr(rnd(range))+1
+    for i=1,range do
+      if i==target then
+        add(a.updateloop, 2)
+      else
+        add(a.updateloop, 1)
+      end
+    end
+  end
+  
+  function a.update_actor()
+    if #a.updateloop <= 0 then
+      a.loop_update()
+    end
+    if a.updateloop[1] == 1 then
+      local yoff = -0.3
+      a.y += yoff
+      deli(a.updateloop, 1)
+    end
+    if a.updateloop[1] == 2 then
+      local xoff = rnd(2)-1
+      local yoff = -0.3
+      print(xoff, 340, 300, 0)
+      a.x += xoff
+      a.y += yoff
+      if xoff > 0 then a.xFlipped = true end
+      if xoff < 0 then a.xFlipped = false end
+      deli(a.updateloop, 1)
+    end
+  end
+
+  function a.loop_draw()
+    for i=1,16 do
+      add(a.drawloop, 2)
+    end
+    for i=1,8 do
+      add(a.drawloop, 1)
+    end
+  end
+  
   function a.draw_actor()
     if #a.drawloop <= 0 then
       a.loop_draw()
@@ -445,161 +451,142 @@ function make_food(k,x,y,h,w)
     end
   end
 
-  function a.update_actor()
-    if #a.updateloop <= 0 then
-      a.loop_update()
-    end
-    if a.updateloop[1] == 1 then
-      deli(a.updateloop, 1)
-    end
-    if a.updateloop[1] == 2 then
-      local xoff = rnd(2)-1
-      local yoff = rnd(4)-2.5
-      print(xoff, 340, 300, 11)
-      a.x += xoff
-      a.y += yoff
-      if xoff > 0 then a.xFlipped = true end
-      if xoff < 0 then a.xFlipped = false end
-      deli(a.updateloop, 1)
-    end
-  end
-
   add(actors, a)
   return a
 end
 
+function make_camera()
+  local c = {}
+  c.posx = player.x - 62
+  c.posy = player.y - 62
+  function c.cameraDraw()
+    local bounds = 24
+    local offset = 64
+    --right bounds
+    if (player.x+player.w-offset > c.posx + bounds) then c.posx = player.x + player.w - offset - bounds end
+    --left bounds
+    if (player.x-offset < c.posx - bounds) then c.posx = player.x - offset + bounds end
+    --lower bounds
+    if (player.y+player.h-offset > bounds + c.posy) then c.posy = player.y + player.h - offset - bounds end
+    --upper bounds
+    if (player.y-offset < c.posy - bounds) then c.posy = player.y - offset + bounds end
+    camera(c.posx, c.posy)
+  end
+  return c
+end
 
-  function make_camera()
-    local c = {}
-    c.posx = player.x - 62
-    c.posy = player.y - 62
-    function c.cameraDraw()
-      local bounds = 24
-      local offset = 64
-      --right bounds
-      if (player.x+player.w-offset > c.posx + bounds) then c.posx = player.x + player.w - offset - bounds end
-      --left bounds
-      if (player.x-offset < c.posx - bounds) then c.posx = player.x - offset + bounds end
-      --lower bounds
-      if (player.y+player.h-offset > bounds + c.posy) then c.posy = player.y + player.h - offset - bounds end
-      --upper bounds
-      if (player.y-offset < c.posy - bounds) then c.posy = player.y - offset + bounds end
-      camera(c.posx, c.posy)
-    end
-    return c
+function attach(pl, t)
+  local tr = 4 --target ratio
+  local er = mid(1, sqrt(pl.size)*0.5, 100) --eat range
+  t.x=(pl.x*t.atsp + t.x*tr)/(t.atsp+tr)
+  t.y=(pl.y*t.atsp + t.y*tr)/(t.atsp+tr)
+  if abs(t.x-pl.x) < er and abs(t.y-pl.y) < er then
+    eat(pl, t)
+  else t.atsp += 0.8
   end
-  
-  function attach(pl, t)
-    local tr = 4 --target ratio
-    local er = mid(1, sqrt(pl.size)*0.5, 100) --eat range
-    t.x=(pl.x*t.attSp + t.x*tr)/(t.attSp+tr)
-    t.y=(pl.y*t.attSp + t.y*tr)/(t.attSp+tr)
-    if abs(t.x-pl.x) < er and abs(t.y-pl.y) < er then
-      eat(pl, t)
-    else t.attSp += 0.8
-    end
-  end
-  
-  function eat(pl, t)
-    eated = true
-    eat_fx(pl, t)
-    del(actors, t)
-    if t.sprite == food_sprites["plankton"] then calorie = 1.1 end
-    if t.sprite == food_sprites["krill"] then calorie = 2.5 end
-    if t.sprite == food_sprites["fish"] then calorie = 5 end
-    pl.add_mass(calorie)
-  end
-  
-  function spawn_food()
-    local spawnDir = flr(rnd(4))
-    local offset = flr(rnd(128))-64
-    local soff = flr(rnd(24))
-    local food_seed = flr(rnd(player.mass*player.mass))
-    local x
-    local y
-    if spawnDir == 0 then x,y = 64+soff,offset end
-    if spawnDir == 1 then x,y = -64-soff,offset end
-    if spawnDir == 2 then x,y = offset,64+soff end
-    if spawnDir == 3 then x,y = offset,-64-soff end
-    if food_seed <= 250 then
-      make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["plankton"],16)
-    end
-    if food_seed <= 900 and food_seed > 250 then
-      make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["krill"],16)
-    end
-    if food_seed > 900 then
-        make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["fish"],16)
-    end
-  end
-  
-  function bubbles_fx(pl)
-    local sp = 3
-    local fx = {dx=sp*pl.dx*-1,dy=sp*pl.dy*-1,dur=20,spr=8,x=pl.xCen(),y=pl.yCen()}
-    add (particles, fx);
-  end
+end
 
-  function eat_fx (pl)
-    local sp = 4.5 --speed
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, sp, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-  
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, -sp, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-    
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, sp, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-    
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, -sp, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-  
-    local sp = 6
-  
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, 0, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-  
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, 0, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-    
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, sp, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-    
-    local fx = {}
-    fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, -sp, 20, 7, pl.xCen(), pl.yCen()
-    add(particles, fx)
-  
+function eat(pl, t)
+  if t.kind == "plankton" then calorie = 1 end
+  if t.kind == "krill" then calorie = 2.5 end
+  if t.kind == "fish"  then calorie = 5 end
+  pl.add_mass(calorie)
+  eat_fx(pl, t)
+  del(actors, t)
+end
+
+function spawn_food()
+  local spawnDir = flr(rnd(4))
+  local offset = flr(rnd(32))+70
+  local smalloff = flr(rnd(32))-16
+  local food_seed = flr(rnd(player.mass*player.mass))
+  local x
+  local y
+  if spawnDir == 0 then x,y =  smalloff, offset end
+  if spawnDir == 1 then x,y =  smalloff,-offset end
+  if spawnDir == 2 then x,y =  offset, smalloff end
+  if spawnDir == 3 then x,y = -offset, smalloff end
+  if food_seed <= 250 then
+    --make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["plankton"],16)
+    make_plankton(cam.posx+64+x,cam.posy+64+y)
   end
+  if food_seed <= 900 and food_seed > 250 then
+    --make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["krill"],16)
+    make_krill(cam.posx+64+x,cam.posy+64+y)
+  end
+  -- if food_seed > 900 then
+  --   make_food("food", x+cam.posx+64, y+cam.posy+64, 6, 6, food_sprites["fish"],16)
+  -- end
+end
+
+function bubbles_fx(pl)
+  local sp = 3
+  local fx = {dx=sp*pl.dx*-1,dy=sp*pl.dy*-1,dur=20,spr=8,x=pl.xCen(),y=pl.yCen()}
+  add (particles, fx);
+end
+
+function eat_fx (pl)
+  local sp = 4.5 --speed
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, sp, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, -sp, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
   
-  function update_particles(fx)
-    if fx.dur > 0 then
-      fx.x += fx.dx
-      fx.y += fx.dy
-      fx.dur -= 1
-      fx.dx *= .6
-      fx.dy *= .6
-      if fx.dur <= 0 then del(particles, fx) end
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, sp, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+  
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, -sp, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+
+  local sp = 6
+
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = sp, 0, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = -sp, 0, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+  
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, sp, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+  
+  local fx = {}
+  fx.dx,fx.dy,fx.dur,fx.pal,fx.x,fx.y = 0, -sp, 20, 7, pl.xCen(), pl.yCen()
+  add(particles, fx)
+
+end
+
+function update_particles(fx)
+  if fx.dur > 0 then
+    fx.x += fx.dx
+    fx.y += fx.dy
+    fx.dur -= 1
+    fx.dx *= .6
+    fx.dy *= .6
+    if fx.dur <= 0 then del(particles, fx) end
+  end
+end
+
+function draw_particles(fx)
+  if fx.spr == nil then
+    if fx.dur != 7 and fx.dur != 6 and fx.dur != 2 then 
+      pset(fx.x, fx.y, fx.pal) else return 
     end
   end
-  
-  function draw_particles(fx)
-    if fx.spr == nil then
-      if fx.dur != 7 and fx.dur != 6 and fx.dur != 2 then 
-        pset(fx.x, fx.y, fx.pal) else return 
-      end
-    end
-    if fx.pal == nil then
-      spr(8,fx.x, fx.y)
-    end
+  if fx.pal == nil then
+    spr(8,fx.x, fx.y)
   end
-  
-  function adv_frame()
-    local reset = 127
-    if ani < reset then ani += 1 end
-    if ani >= reset then ani = 0 end
-  end
+end
+
+function adv_frame()
+  local reset = 127
+  if ani < reset then ani += 1 end
+  if ani >= reset then ani = 0 end
+end
