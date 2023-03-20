@@ -4,7 +4,12 @@ __lua__
 debug = false
 
 function _init() 
-    initsteps()
+  initsteps()
+  poke4(0x5600,unpack(split"0x9.0908,0x.0100,0x1100,0x4620.2100,0x4110.1674,0x7774.7711,0,0x111.7700,0x.0001,0x14.0740,0x1700.0700,0x715.1000,0x.0004,0x110.0010,0x1101.0010,0x105.0011,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x3f3f.3f3f,0x3f3f.3f3f,0x3f3f.3f00,0x3f.3f3f,0x333f.3f00,0x3f.3f33,0xc33.3300,0x33.330c,0x33.3300,0x33.3300,0x3333.3300,0x33.3333,0xfffc.f0c0,0xc0f0.fcff,0xff3f.0f03,0x30f.3fff,0x303.0f0f,0,0,0x7878.6060,0x3c7e.e7c3,0x187e.187e,0xc00,0x.000c,0,0x607.0303,0,0xf0f.0f0f,0x1b1b.1b1b,0,0x1f1b.1f0e,0x.000e,0,0,0x1e3f.3f3f,0xc0c.001e,0x1b1b.1b1b,0,0x66ff.ff66,0x66ff.ff66,0x3f13.7f7e,0x3f7f.647e,0x3873.e7c6,0x63e7.ce1c,0x3f33.3f1e,0x3e7f.e3fe,0x307.0606,0,0x60e.3c38,0x383c.0e06,0x3038.1e0e,0xe1e.3830,0xe1f.1b00,0x.1b1f,0x3f0c.0c00,0xc.0c3f,0,0x307.0606,0x3f00,0x.003f,0,0x303,0x60e.0c0c,0x303.0706,0x6b63.7f3e,0x3e7f.636b,0x181f.1f18,0x7f7f.1818,0x7e60.7f3f,0x7f7f.033f,0x7c60.7f3f,0x3f7f.603c,0x676e.7c78,0x6060.7f7f,0x3f03.7f7f,0x3f7f.607f,0x3f03.7f7e,0x3e7f.637f,0x3870.7f7f,0x307.0e1c,0x3e63.7f3e,0x3e7f.637f,0x7f63.7f3e,0x3f7f.607e,0x.0303,0x303,0x.0606,0x307.0606,0x1f7c.f0c0,0xc0f0.7c1f,0xff.ff00,0xff.ff00,0xf83e.0f03,0x30f.3ef8,0x7c60.7f3f,0xc0c.003c,0xfbdb.ff7e,0xfeff.03fb,0x7e60.7e3e,0x7e7f.637f,0x3f03.0303,0x3f7f.637f,0x637f.3e00,0x3e7f.6303,0x7e60.6060,0x7e7f.637f,0x7f63.7f3e,0x7e7f.037f,0x1f66.7e3c,0x606.061f,0x3f33.7f7e,0x1f3f.381e,0x3f03.0303,0x6363.637f,0x300.0303,0x607.0303,0x3000.3030,0x1e3f.3330,0x3b33.0303,0x333b.1f1f,0x303.0303,0x607.0303,0xffff.6600,0xc3c3.c3db,0x7f3f.0300,0x6363.6363,0x637f.3e00,0x3e7f.6363,0x637f.3f00,0x303.3f7f,0x637f.7e00,0x6060.7e7f,0x3f1f.0300,0x303.0333,0x77f.7e00,0x3f7f.703e,0x3f3f.0606,0x3c3e.0606,0x6363.6300,0x3e7f.6363,0x3f33.3300,0xc0c.1e1e,0xc3c3.c300,0x66ff.ffdb,0x3e77.6300,0x6377.3e1c,0x7f63.6300,0x3f7f.607e,0x387f.7f00,0x7f7f.0e1c,0x606.3e3e,0x3e3e.0606,0x607.0303,0xc0c.0e06,0x3030.3e3e,0x3e3e.3030,0x333f.1e0c,0,0,0xffff,0x607.0303,0,0x7f63.7f3e,0x6363.637f,0x3f63.7f3f,0x3f7f.637f,0x363.7f3e,0x3e7f.6303,0x6363.7f3f,0x3f7f.6363,0x3f03.7f7f,0x7f7f.033f,0x3f03.7f7f,0x303.033f,0x7b03.7f7e,0x3e7f.637b,0x7f63.6363,0x6363.637f,0x1818.ffff,0xffff.1818,0x3030.7e7e,0x1e3f.3330,0x1f3b.7363,0x6373.3b1f,0x303.0303,0x7f7f.0303,0xffff.6666,0xc3c3.dbdb,0xdfcf.c7c3,0xc3e3.f3fb,0x6363.7f3e,0x3e7f.6363,0x6363.7f3f,0x303.3f7f,0x6363.7f3e,0xfeff.7363,0x6363.7f3f,0x6373.3f7f,0x3f03.7f7e,0x3f7f.607e,0x1818.ffff,0x1818.1818,0x6363.6363,0x3e7f.6363,0x66e7.c3c3,0x183c.3c7e,0xdbdb.c3c3,0x6666.ffff,0x3c7e.e7c3,0xc3e7.7e3c,0x7ee7.c3c3,0x1818.183c,0x3870.7f7f,0x7f7f.0e1c,0xe0c.3c38,0x383c.0c0e,0x606.0606,0x606.0606,0x3818.1e0e,0xe1e.1838,0x73fb.dfce,0,0x1f1b.1f1f,0x.001f,0xffff.ffff,0xffff.ffff,0xcccc.3333,0xcccc.3333,0x99ff.ffc3,0x7ec3.e7ff,0xc3c3.ff7e,0x7eff.e7e7,0x3030.0303,0x3030.0303,0xfcfc.0c0c,0x3030.3f3f,0x4f4f.3e00,0x3e7f.7f7f,0x7f7f.3600,0x81c.3e7f,0xe7ff.ff7e,0x7eff.ffe7,0x7f1c.1c00,0x363e.1c7f,0xff7e.3c18,0x6666.7eff,0xc3cf.ff7e,0x7eff.cfc3,0x9999.ff7e,0x7ec3.81ff,0x1818.7838,0xe1f.1f1e,0x99c3.ff7e,0x7eff.c399,0x3f1e.0c00,0xc.1e3f,0x3300,0x.0033,0xc3f3.ff7e,0x7eff.f3c3,0x7f1c.0800,0x6377.3e7f,0x1e3f.3f00,0x3f3f.1e0c,0xe7e7.ff7e,0x7eff.c3c3,0x40e.1f1b,0x2070.f8d8,0xeec7.8301,0x10.387c,0xe799.997e,0x7e99.99e7,0x.ffff,0x.ffff,0x3333.3333,0x3333.3333,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x99ff.8100,0x7ec3.81ff,0xbdff.8100,0x7ec3.bdff,0x99ff.8100,0x7ec3.e7ff,0x9999.ff81,0x7ec3.81ff,0x99bd.ff81,0x7ec3.81ff,0x497f.4100,0x3e63.417f,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x99ff.7e00,0x7ec3.81ff,0x99ff.7e00,0x7ec3.bdff,0x99ff.7e00,0x7eff.81ff,0x99bd.ff7e,0x7ec3.81ff,0x99db.ff7e,0x7ec3.81ff,0x497f.3e00,0x3e63.417f,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x4058.1840,0x545c.5d7e,0x4018.5800,0x141c.5d7e,0x4058.5840,0x145c.5dfe,0x4058.5800,0x141c.5dfe,0x7777.3e00,0x3e77.6341,0x6377.3e00,0x3e77.7741,0x6777.3e00,0x3e77.6741,0x7377.3e00,0x3e77.7341,0x6b5d.3e00,0x3e5d.6b77,0x7f7f.3e00,0x3e7f.7f77,0x637f.3e00,0x3e7f.6349,0xffff,0xffff,0xcccc.cccc,0xcccc.cccc,0,0,0,0,0,0,0x6f3e.1c00,0x1c3e.7f7f"))
+  --always use custom font
+  poke(0x5f58,0x81)
+  --adjust height to allow for outline
+  poke(0x5602,10)
 end 
 
 function initsteps()
@@ -29,10 +34,11 @@ end
 
 function _draw()
   --define palette changes
-  pal(1, 140, 1)
-  pal(3, 138, 1)
+  pal(1, 129, 1)
+  --pal(3, 138, 1)
   pal(4, 143, 1)
   pal(10, 135, 1)
+  pal(11, 131, 1)
   pal(5, 142, 1)
   poke(0x5f2e,1)
 
@@ -43,6 +49,7 @@ function _draw()
 end
 
 function title_update()
+  
   pulse = 1
   if ani < 64 then pulse = 1 + ((ani/256)) end
   if ani >= 64 then pulse = 1.25 - ((ani%64)/256) end
@@ -52,26 +59,37 @@ end
 
 function title_draw()
   cls(4)
+  pal(1, 140, 1)
   circfill(5, 20, 12, 10)
   rectfill(0,88,128,10028,1)
   sspr(64, 32, 64, 16, ani/2-64, (ani/32)%2 + 80)
   sspr(64, 32, 64, 16, ani/2, (ani/32)%2 + 80)
   sspr(64, 32, 64, 16, ani/2+64, (ani/32)%2 + 80)
-  sspr(0, 32, 64, 32, 32-(32*pulse-32), 20-(16*pulse-16), 64*pulse, 32*pulse)
-  print("by cody mcpheron", 32, 62, 8) --16 char
-  print("press x to get beeg!", 26, 106, 6) --20 char
+  sspr(0, 32, 64, 32, 32-(32*pulse-32), 14-(14*pulse-14), 64*pulse, 32*pulse)
+  print("by", 56, 59, 2) --16 char
+  print("by", 55, 58, 8) --16 char
+  print("cody mCpheron", 13, 69, 2) --16 char
+  print("cody mCpheron", 12, 68, 8) --16 char
+  print("press ❎ to", 8, 101, 11) --20 char
+  print("press ❎ to", 7, 100, 6) --20 char
+  print("become beeg!", 32, 113, 11)
+  print("become beeg!", 31, 112, 6)
 end
 
 function trans_update ()
+  ti *= 1.1
   if ti < 500 then
-    ti *= 1.1
     title_update()
     camera(0, flr(ti)-5)
   end
-  if ti >= 500 then
-    ti = 5
-    scene = "lvl1"
+  if ti >= 600 and #actors == 0 then
     lvl1_init()
+  end
+  if ti >= 600 then
+    lvl1_update()
+  end
+  if ti > 2200 then
+    scene = "lvl1"
   end
 end
 
@@ -79,16 +97,29 @@ function trans_draw()
   if ti < 500 then
     title_draw()
   end
-  if ti >= 500 then
+  if ti > 150 and ti <= 220 then
+    pal(1, 131, 1)
+  end
+  if ti > 220 and ti <= 300 then
+    pal(1, 1, 1)
+  end
+  if ti > 300 and ti <= 400 then
+    pal(1, 129, 1)
+  end
+  if ti > 400 and ti <= 600 then
+    pal(1, 0, 1)
+  end
+  if ti >= 600 then
     lvl1_draw()
+    rectfill(cam.posx, cam.posy, cam.posx+128, cam.posy+240-ti/6, 0) -- mid(0,800-ti/2,128)
   end
 end
 
 function lvl1_init()
-  player = make_player(300, 300, 6, 6)
+  player = make_player(550, 300, 6, 6)
   cam = make_camera()
-  make_krill(270, 300)
-  make_plankton(330, 300)
+  make_krill(570, 300)
+  make_plankton(530, 300)
   -- make_food("food", 330, 300, 7, 7, food_sprites["plankton"], 16)
   -- make_food("food", 300, 330, 7, 7, food_sprites["plankton"], 16)
   -- make_food("food", 270, 300, 7, 7, food_sprites["plankton"], 16)
@@ -97,21 +128,25 @@ end
 
 function lvl1_draw()
   cls(1)
+  cam.cameraDraw()
   foreach(particles, draw_particles)
 
   for i = 1, #actors do
     actors[i].draw_actor() 
   end
-
   player.draw_actor()
 
   --UI elements
-  circfill(cam.posx+8, cam.posy, 22, 8)
+  circfill(cam.posx+14, cam.posy, 30, 8)
+  print("size:", cam.posx + 4, cam.posy + 3, 2) 
   print("size:", cam.posx + 3, cam.posy + 2, 10) 
-  print(format(player.mass, 2), cam.posx + 3, cam.posy + 10, 10)
-  circfill(cam.posx+119, cam.posy, 22, 8)
-  print("time:", cam.posx + 107, cam.posy + 2, 10)
-  print(flr(timer), cam.posx + 126 - #tostr(flr(timer))*4, cam.posy + 10, 10)
+  print(format(player.mass, 1), cam.posx + 4, cam.posy + 13, 2)
+  print(format(player.mass, 1), cam.posx + 3, cam.posy + 12, 10)
+  circfill(cam.posx+113, cam.posy, 30, 8)
+  print("time:", cam.posx + 90, cam.posy + 3, 2)
+  print("time:", cam.posx + 89, cam.posy + 2, 10)
+  print(flr(timer), cam.posx + 127 - #tostr(flr(timer))*8, cam.posy + 13, 2)
+  print(flr(timer), cam.posx + 126 - #tostr(flr(timer))*8, cam.posy + 12, 10)
 end
 
 function lvl1_update()
@@ -281,7 +316,7 @@ function make_player(x,y,h,w)
     if p.dx != 0 then psprite = p.anim["side"] end
     if p.dy > 0 then psprite = p.anim["down"] end
     if p.dy < 0 then psprite = p.anim["up"] end
-    ovalfill(p.x-p.size-1, p.y-p.size-1, p.x+p.w+p.size+1, p.y+p.h+p.size+1, 5)
+    ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size+1, p.y+p.h+p.size+1, 2)
     ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 8)
     sspr(psprite[1], psprite[2], psprite[3], psprite[4], p.x, p.y, psprite[3], psprite[4], p.xFlipped)
   end
@@ -468,6 +503,7 @@ function make_camera()
     --upper bounds
     if (player.y-offset < c.posy - bounds) then c.posy = player.y - offset + bounds end
     camera(c.posx, c.posy)
+    map( 0, 0, c.posx/1.21, c.posy/1.2, 1024, 512)
   end
   return c
 end
