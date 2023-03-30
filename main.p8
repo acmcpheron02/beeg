@@ -120,6 +120,7 @@ function lvl1_init()
   cam = make_camera()
   make_krill(570, 300)
   make_plankton(530, 300)
+  make_fish(500, 270)
   -- make_food("food", 330, 300, 7, 7, food_sprites["plankton"], 16)
   -- make_food("food", 300, 330, 7, 7, food_sprites["plankton"], 16)
   -- make_food("food", 270, 300, 7, 7, food_sprites["plankton"], 16)
@@ -268,7 +269,7 @@ function make_player(x,y,h,w)
   p.dy = 0
   p.x_speed = 0
   p.y_speed = 0
-  p.mass = 20
+  p.mass = 35
   p.base_accel = 0.55
   p.base_friction = .45
   p.base_mass = 20
@@ -279,7 +280,7 @@ function make_player(x,y,h,w)
   p.accel = 0
   p.friction = 0
   p.radius = 5
-  p.xFlipped = false
+  p.xflipped = false
   p.anim = {
     ["idle"] = {0,0,7,7},
     ["side"] = {8,0,7,7},
@@ -325,8 +326,8 @@ function make_player(x,y,h,w)
   end
   
   function p.draw_actor()
-    if p.dx < 0 then p.xFlipped = true end
-    if p.dx > 0 then p.xFlipped = false end
+    if p.dx < 0 then p.xflipped = true end
+    if p.dx > 0 then p.xflipped = false end
     
     psprite = p.anim["idle"]
     if p.dx != 0 then psprite = p.anim["side"] end
@@ -338,7 +339,7 @@ function make_player(x,y,h,w)
     if p.hurt % 6 == 5 then
       ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 7)
     end
-    sspr(psprite[1], psprite[2], psprite[3], psprite[4], p.x, p.y, psprite[3], psprite[4], p.xFlipped)
+    sspr(psprite[1], psprite[2], psprite[3], psprite[4], p.x, p.y, psprite[3], psprite[4], p.xflipped)
   end
 
   p.add_mass(0)
@@ -353,7 +354,7 @@ function make_food(k,x,y,h,w)
     a.y=y
     a.h=h
     a.w=w
-    a.xFlipped = 0
+    a.xflipped = false
     a.frame = 0
     a.atsp = 0
     a.eatreq = 1000
@@ -472,11 +473,10 @@ function make_krill(x,y)
     if a.updateloop[1] == 2 then
       local xoff = rnd(2)-1
       local yoff = -0.3
-      print(xoff, 340, 300, 0)
       a.x += xoff
       a.y += yoff
-      if xoff > 0 then a.xFlipped = true end
-      if xoff < 0 then a.xFlipped = false end
+      if xoff > 0 then a.xflipped = true end
+      if xoff < 0 then a.xflipped = false end
       deli(a.updateloop, 1)
     end
   end
@@ -495,11 +495,92 @@ function make_krill(x,y)
       a.loop_draw()
     end
     if a.drawloop[1] == 1 then
-      sspr(16, 16, 8, 8, a.x, a.y, 8, 8, a.xFlipped, false)
+      sspr(16, 16, 8, 8, a.x, a.y, 8, 8, a.xflipped, false)
       deli(a.drawloop, 1)
     end
     if a.drawloop[1] == 2 then
-      sspr(24, 16, 8, 8, a.x, a.y, 8, 8, a.xFlipped, false)
+      sspr(24, 16, 8, 8, a.x, a.y, 8, 8, a.xflipped, false)
+      deli(a.drawloop, 1)
+    end
+  end
+
+  add(actors, a)
+  return a
+end
+
+function make_fish(x,y)
+  local a = make_food("fish",x,y,8,8) --make_food(k,x,y,h,w)
+  a.eatreq = 30 
+  a.updateloop = {}
+  a.drawloop = {}
+
+  function a.loop_update()
+    local range = 50
+    for i=1,range do
+      if i < 8 or i > 42 then
+        add(a.updateloop, 1)
+      else
+        add(a.updateloop, 2)
+      end
+    end
+  end
+  
+  function a.update_actor()
+    if #a.updateloop <= 0 then
+      a.loop_update()
+    end
+    if a.updateloop[1] == 1 then
+      local xoff = .2
+      if a.xflipped == true then
+        a.x -= xoff
+      end
+      if a.xflipped == false then
+        a.x += xoff
+      end
+      if flr(rnd(100)) == 50 then
+        if a.xflipped == true then
+          a.xflipped = false
+        end
+        if a.xflipped == false then
+          a.xflipped = true
+        end
+      end
+      deli(a.updateloop, 1)
+    end
+    if a.updateloop[1] == 2 then
+      local xoff = 1.2
+      if a.xflipped == true then
+        a.x -= xoff
+      end
+      if a.xflipped == false then
+        a.x += xoff
+      end
+      deli(a.updateloop, 1)
+    end
+  end
+
+  function a.loop_draw()
+    for i=1,8 do
+      add(a.drawloop, 1)
+    end
+    for i=1,34 do
+      add(a.drawloop, 2)
+    end
+    for i=1,8 do
+      add(a.drawloop, 1)
+    end
+  end
+  
+  function a.draw_actor()
+    if #a.drawloop <= 0 then
+      a.loop_draw()
+    end
+    if a.drawloop[1] == 1 then
+      sspr(48, 16, 16, 16, a.x, a.y, 16, 16, a.xflipped, false)
+      deli(a.drawloop, 1)
+    end
+    if a.drawloop[1] == 2 then
+      sspr(32, 16, 16, 16, a.x, a.y, 17, 15, a.xflipped, false)
       deli(a.drawloop, 1)
     end
   end
@@ -542,8 +623,8 @@ end
 
 function eat(pl, t)
   if t.kind == "plankton" then calorie = 1 end
-  if t.kind == "krill" then calorie = 2.5 end
-  if t.kind == "fish"  then calorie = 5 end
+  if t.kind == "krill" then calorie = 2.2 end
+  if t.kind == "fish"  then calorie = 4 end
   pl.add_mass(calorie)
   eat_fx(pl, t)
   del(actors, t)
@@ -573,7 +654,7 @@ end
 
 function bubbles_fx(pl)
   local sp = 3
-  local fx = {dx=sp*pl.dx*-1,dy=sp*pl.dy*-1,dur=20,spr=8,x=pl.xCen(),y=pl.yCen()}
+  local fx = {dx=sp*pl.dx*-1,dy=sp*pl.dy*-1,dur=20,spr=5,x=pl.xCen(),y=pl.yCen()}
   add (particles, fx);
 end
 
