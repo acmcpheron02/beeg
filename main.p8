@@ -151,6 +151,7 @@ end
 
 function lvl1_update()
   player.move()
+  if player.hurt > 0 then player.hurt -= 1 end
   cam.cameraDraw()
   while #actors < 18 do
     spawn_food()
@@ -168,11 +169,12 @@ function gameover_update()
 end
 
 function gameover_draw()
-  print("game over", cam.posx + 48, cam.posy+26, 7)
-  print("YOU AREN'T", cam.posx + 48, cam.posy+50, 7)
-  print("beeg", cam.posx + 60, cam.posy+60, 8)
-  print("ENOUGH TO CONTINUE!", cam.posx +28 , cam.posy+70, 7)
-  print("press x to try again", cam.posx +28 , cam.posy+94, 7)
+  print("game over", cam.posx + 31, cam.posy+37, 8)
+  print("game over", cam.posx + 30, cam.posy+36, 7)
+  print("press x", cam.posx +43 , cam.posy+81, 8)
+  print("press x", cam.posx +42 , cam.posy+80, 7)
+  print("to try again!", cam.posx +15 , cam.posy+91, 8)
+  print("to try again!", cam.posx +14 , cam.posy+90, 7)
 end
 
 function direction_control ()
@@ -220,8 +222,13 @@ function collide(a1, a2)
 end
 
 function collide_event(a1, a2)
-  if(a1.kind=="player") and (a2.kind!="player") then
-    attach(a1,a2)
+  if(a1.kind=="player") and (a2.kind!="player") and a1.hurt == 0 then
+    if a1.mass >= a2.eatreq then
+      attach(a1,a2)
+    end
+    if a1.mass < a2.eatreq then
+      a1.damage()
+    end
   end
 end
 
@@ -261,12 +268,13 @@ function make_player(x,y,h,w)
   p.dy = 0
   p.x_speed = 0
   p.y_speed = 0
-  p.mass = 22
+  p.mass = 20
   p.base_accel = 0.55
   p.base_friction = .45
   p.base_mass = 20
   p.max_speed = 3
   p.stop_under = 0.05
+  p.hurt = 0
   p.size = 2
   p.accel = 0
   p.friction = 0
@@ -277,14 +285,22 @@ function make_player(x,y,h,w)
     ["side"] = {8,0,7,7},
     ["up"] = {16,0,7,7},
     ["down"] = {24,0,7,7},
+    ["hurt"] = {32,0,7,7}
   }
   function p.add_mass(m)
     p.mass += m
-    if p.mass <= 9.9 then scene = "gameover" end
+    if p.mass <= 10.0 then scene = "gameover" end
     p.set_accel()
     p.set_friction()
     p.set_size()
     p.set_radius()
+  end
+
+  function p.damage()
+    p.hurt = 18
+    p.x_speed *= -3
+    p.y_speed *= -3
+    p.add_mass(-p.mass*0.05)
   end
   
   function p.move()
@@ -316,8 +332,12 @@ function make_player(x,y,h,w)
     if p.dx != 0 then psprite = p.anim["side"] end
     if p.dy > 0 then psprite = p.anim["down"] end
     if p.dy < 0 then psprite = p.anim["up"] end
+    if p.hurt > 0 then psprite = p.anim["hurt"] end
     ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size+1, p.y+p.h+p.size+1, 2)
     ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 8)
+    if p.hurt % 6 == 5 then
+      ovalfill(p.x-p.size, p.y-p.size, p.x+p.w+p.size, p.y+p.h+p.size, 7)
+    end
     sspr(psprite[1], psprite[2], psprite[3], psprite[4], p.x, p.y, psprite[3], psprite[4], p.xFlipped)
   end
 
@@ -424,6 +444,7 @@ end
 
 function make_krill(x,y)
   local a = make_food("krill",x,y,8,8) --make_food(k,x,y,h,w)
+  a.eatreq = 20 
   a.updateloop = {}
   a.drawloop = {}
 
